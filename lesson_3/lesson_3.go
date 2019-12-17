@@ -73,7 +73,7 @@ func dashReplace(s string) string { //удалить тире, дефисы, р�
 	sym := regexp.MustCompile("[–.;:-]")
 	space := regexp.MustCompile(`\s+`)
 
-	b := sym.ReplaceAllString(s, " ")   //удаляем лишине символы
-	k := space.ReplaceAllString(b, " ") //удаляем лишние пробелы
-	return k
+	s = sym.ReplaceAllString(s, " ")   //удаляем лишине символы
+	s = space.ReplaceAllString(s, " ") //удаляем лишние пробелы
+	return s
 }
