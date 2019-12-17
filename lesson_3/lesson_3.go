@@ -70,7 +70,7 @@ func wordCount(inputStr string) []string {
 
 func dashReplace(s string) string { //удалить тире, дефисы, разрывы и пробелы.
 
-	sym := regexp.MustCompile("[–.;:-]")
+	sym := regexp.MustCompile("[–.;:,-]")
 	space := regexp.MustCompile(`\s+`)
 
 	s = sym.ReplaceAllString(s, " ")   //удаляем лишине символы
