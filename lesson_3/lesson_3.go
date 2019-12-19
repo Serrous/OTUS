@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"regexp"
 	"sort"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 func main() {
@@ -19,9 +19,12 @@ func main() {
 func wordCount(inputStr string) []string {
 	inputStr = strings.ToLower(inputStr) //выравниваем регистр
 
-	inputStr = dashReplace(inputStr) //удаляем знаки препинания, тире, дефисы
+	dashRemove := func(c rune) bool { //возвращаем true, если руна НЕ число и НЕ буква
+		return !unicode.IsLetter(c) && !unicode.IsNumber(c)
+	}
 
-	srcSlice := strings.Split(inputStr, " ")
+	srcSlice := strings.FieldsFunc(inputStr, dashRemove)
+
 	wordsMap := map[string]int{} //карта "слово - количество"
 
 	for i, srcVal := range srcSlice {
@@ -44,7 +47,7 @@ func wordCount(inputStr string) []string {
 		}
 	}
 
-	btwSlice := []int{} //промежуточный слайс для сортировки ключей карты uniCount
+	btwSlice := make([]int, 0, len(uniCount)) //промежуточный слайс для сортировки ключей карты uniCount
 	for key := range uniCount {
 		btwSlice = append(btwSlice, key)
 	}
@@ -54,26 +57,18 @@ func wordCount(inputStr string) []string {
 	})
 
 	finalSlice := make([]string, 0, len(btwSlice)) //собираем финальный слайс
-	if len(btwSlice) < 10 {                        //если не набралось 10 слов с уникальным количеством повторений
-		for i := range btwSlice {
-			finalSlice = append(finalSlice, strconv.Itoa(btwSlice[i])+" раз(а): "+uniCount[btwSlice[i]])
-		}
-	} else {
-		for i := 0; i < 10; i++ {
-			finalSlice = append(finalSlice, strconv.Itoa(btwSlice[i])+" раз(а): "+uniCount[btwSlice[i]])
-		}
+
+	for i := 0; i < maxValue(len(btwSlice)); i++ {
+		finalSlice = append(finalSlice, strconv.Itoa(btwSlice[i])+" раз(а): "+uniCount[btwSlice[i]])
 	}
 
 	return finalSlice
 
 }
 
-func dashReplace(s string) string { //удалить тире, дефисы, разрывы и пробелы.
-
-	sym := regexp.MustCompile("[–.;:,-]")
-	space := regexp.MustCompile(`\s+`)
-
-	a := sym.ReplaceAllString(s, " ")   //удаляем лишине символы
-	b := space.ReplaceAllString(a, " ") //удаляем лишние пробелы
-	return b
+func maxValue(a int) int {
+	if a > 10 {
+		return a
+	}
+	return 10
 }
